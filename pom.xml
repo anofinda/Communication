@@ -124,5 +124,6 @@
                 </executions>
             </plugin>
         </plugins>
+        <finalName>Communication</finalName>
     </build>
 </project>

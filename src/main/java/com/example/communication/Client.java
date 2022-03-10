@@ -27,7 +27,6 @@ public class Client extends Application {
         } catch (IOException ioException) {
             Alert alert=new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("Application Error");
             alert.setContentText("Application can not show.");
             alert.showAndWait();
         }

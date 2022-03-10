@@ -11,8 +11,7 @@ import java.nio.charset.StandardCharsets;
  * @author dongyudeng
  */
 public class ClientController{
-    static BufferedReader reader;
-    static BufferedWriter writer;
+    private BufferedWriter writer;
     @FXML
     private TextArea communicationArea;
     @FXML
@@ -29,26 +28,17 @@ public class ClientController{
     private Label portLabel;
     @FXML
     private Button connectButton;
-
     @FXML
     public void connectClicked(Event event) {
         String ipString =ipField.getText(),portString=portField.getText();
         try{
-            Socket clientSocket=new Socket(ipString,Integer.parseInt(portString));
-            communicationArea.appendText("Connect to server…"+"\n");
-            reader=new BufferedReader(new InputStreamReader(clientSocket.getInputStream(),StandardCharsets.UTF_8));
-            writer=new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8));
-            ReadHandler handler= new ReadHandler();
-            handler.start();
+            int port=Integer.parseInt(portString);
+            ClientConnectThread connectThread=new ClientConnectThread(ipString,port,this);
         }
         catch (NumberFormatException numberFormatException){
             communicationArea.appendText("Port Illegal!"+"\n");
         }
-        catch (IOException ioException){
-            communicationArea.appendText("Connect failed!"+"\n");
-        }
     }
-
     @FXML
     public void sayClicked(Event event) throws IOException {
         String sayText=sayField.getText();
@@ -57,17 +47,33 @@ public class ClientController{
         writer.newLine();
         writer.flush();
     }
-
-    class ReadHandler extends Thread{
-        @Override
-        public void run() {
-            while(true){
-                try {
-                    communicationArea.appendText("server:"+reader.readLine()+"\n");
-                } catch (IOException e) {
-                    communicationArea.appendText("read failed"+"\n");
-                }
-            }
+    void awake(Socket clientSocket) throws IOException {
+        communicationArea.appendText("Connect to server…"+"\n");
+        writer=new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8));
+        ReadThread readThread=new ReadThread(clientSocket,communicationArea);
+        readThread.start();
+    }
+}
+class ClientConnectThread extends Thread{
+    String ip;
+    int port;
+    ClientController controller;
+    ClientConnectThread(String ipStirng,int p,ClientController clientController){
+        ip=ipStirng;
+        port=p;
+        controller=clientController;
+    }
+    @Override
+    public void run() {
+        try {
+            Socket clientSocket=new Socket(ip,port);
+            controller.awake(clientSocket);
+        } catch (IOException e) {
+            Alert alert=new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Server can not be connected.");
+            alert.showAndWait();
         }
+
     }
 }

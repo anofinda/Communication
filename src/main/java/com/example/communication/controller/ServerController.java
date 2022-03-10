@@ -1,21 +1,18 @@
 package com.example.communication.controller;
 
-import com.example.communication.Server;
 import javafx.scene.control.*;
 import javafx.fxml.*;
 import javafx.event.*;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Future;
 
 /**
  * @author dongyudeng
  */
 public class ServerController {
-    static BufferedWriter writer;
+    private BufferedWriter writer;
     @FXML
     private TextArea communicationArea;
     @FXML
@@ -39,63 +36,48 @@ public class ServerController {
     }
 
     @FXML
-    public void startClicked(Event event) {
+    public void startClicked(Event event) throws IOException, InterruptedException {
         String portString = portField.getText();
         try {
             int port=Integer.parseInt(portString);
-            ServerWriteHandler handler=new ServerWriteHandler(port,communicationArea);
+            SocketAcceptThread acceptThread=new SocketAcceptThread(port,this);
+            acceptThread.start();
             communicationArea.appendText("Server starting…" + "\n");
-            handler.start();
+            sayButton.setDisable(true);
         } catch (NumberFormatException numberFormatException) {
-            communicationArea.appendText("Port Illegal!" + "\n");
+            Alert alert=new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Port Illegal.");
+            alert.showAndWait();
         }
+    }
+    void awake(Socket clientSocket) throws IOException {
+        sayButton.setDisable(false);
+        writer=new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(),StandardCharsets.UTF_8));
+        ReadThread readThread=new ReadThread(clientSocket,communicationArea);
+        readThread.start();
     }
 }
 
-class ServerWriteHandler extends Thread {
+class SocketAcceptThread extends Thread{
+    ServerController controller;
     int port;
-    TextArea communicationArea;
-    ServerWriteHandler(int p,TextArea area){
+    SocketAcceptThread(int p,ServerController serverController){
         port=p;
-        communicationArea=area;
+        controller=serverController;
     }
     @Override
     public void run() {
         try {
-            ServerSocket serverSocket=new ServerSocket(port);
+            ServerSocket serverSocket = new ServerSocket(port);
             Socket clientSocket=serverSocket.accept();
-            communicationArea.appendText("Client Connected..." + "\n");
-            ServerController.writer=new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(),StandardCharsets.UTF_8));
-            ServerReadHandler handler=new ServerReadHandler(clientSocket,communicationArea);
-            handler.start();
+            controller.awake(clientSocket);
         } catch (IOException e) {
-            communicationArea.appendText("Can not be connected!" + "\n");
+            Alert alert=new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Port can not be connected.");
+            alert.showAndWait();
         }
     }
 }
 
-class ServerReadHandler extends Thread {
-    Socket clientSocket;
-    TextArea communicationArea;
-
-    ServerReadHandler(Socket socket, TextArea area) {
-        clientSocket = socket;
-        communicationArea = area;
-    }
-
-    @Override
-    public void run() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.UTF_8));
-            while (true) {
-                try {
-                    communicationArea.appendText("client:" + reader.readLine() + "\n");
-                } catch (IOException e) {
-                    communicationArea.appendText("read failed" + "\n");
-                }
-            }
-        } catch (IOException e) {
-            communicationArea.appendText("Read Failed!");
-        }
-    }
-}
