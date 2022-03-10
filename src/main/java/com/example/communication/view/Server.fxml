@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.communication.controller.ServerController">
+   <children>
+       <GridPane hgap="5.0" prefHeight="400.0" prefWidth="600.0" vgap="5.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+           <columnConstraints>
+               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="70.0" />
+               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="70.0" />
+               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="573.0" minWidth="10.0" prefWidth="70.0" />
+               <ColumnConstraints hgrow="SOMETIMES" maxWidth="573.0" minWidth="10.0" prefWidth="100.0" />
+               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="573.0" minWidth="10.0" prefWidth="80.0" />
+           </columnConstraints>
+           <rowConstraints>
+               <RowConstraints maxHeight="130.0" minHeight="3.0" percentHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+               <RowConstraints maxHeight="264.0" minHeight="10.0" percentHeight="80.0" prefHeight="227.0" vgrow="SOMETIMES" />
+               <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+           </rowConstraints>
+          <children>
+              <Label fx:id="portLabel" text=" Port:">
+                  <font>
+                      <Font size="18.0" />
+                  </font>
+              </Label>
+              <TextField fx:id="portField" promptText="Server Port" GridPane.columnIndex="1" GridPane.columnSpan="2">
+                  <font>
+                      <Font size="18.0" />
+                  </font>
+              </TextField>
+              <Button fx:id="startButton" mnemonicParsing="false" onMouseClicked="#startClicked" text="start" GridPane.columnIndex="4">
+                  <font>
+                      <Font size="18.0" />
+                  </font>
+              </Button>
+              <TextArea fx:id="communicationArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="5" GridPane.rowIndex="1" />
+              <TextField fx:id="sayField" GridPane.columnSpan="4" GridPane.rowIndex="2">
+                  <font>
+                      <Font size="18.0" />
+                  </font>
+              </TextField>
+              <Button fx:id="sayButton" mnemonicParsing="false" onMouseClicked="#sayClicked" text="Say" GridPane.columnIndex="4" GridPane.rowIndex="2">
+                  <font>
+                      <Font size="18.0" />
+                  </font>
+              </Button>
+          </children>
+       </GridPane>
+   </children>
+</AnchorPane>
