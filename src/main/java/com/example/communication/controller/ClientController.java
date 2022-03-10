@@ -34,6 +34,7 @@ public class ClientController{
         try{
             int port=Integer.parseInt(portString);
             ClientConnectThread connectThread=new ClientConnectThread(ipString,port,this);
+            connectThread.start();
         }
         catch (NumberFormatException numberFormatException){
             communicationArea.appendText("Port Illegal!"+"\n");

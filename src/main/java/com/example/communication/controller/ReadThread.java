@@ -9,6 +9,9 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * @author dongyudeng
+ */
 public class ReadThread extends Thread {
     Socket clientSocket;
     TextArea communicationArea;
